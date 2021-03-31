@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>IIA uzd. ND</title>
+		<style>
+			body { margin: 0; }
+		</style>
+        <script src="lib/three.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.js" integrity="sha512-u+vtyZDzyd0zgAEffKfoNx2BnCahAOBBYvzGu6vma1B18zQ6lEGF3F6dAFvqaxDoIU/GZRxcXV5oq23OIrkQwg==" crossorigin="anonymous"></script>
+	</head>
+	<body>
+        <canvas id="c"></canvas>
+        <script type="module">
+        import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
+        var radius = 1;
+        var height = 8;
+        var rotation = 0;
+        var rColor = 0;
+        var gColor = 0;
+        var bColor = 0;
+        var cAlpha = 1;
+        function main() {
+                // NOTE:
+                // Fix arrow height
+                const canvas = document.querySelector('#c');
+                const renderer = new THREE.WebGLRenderer({canvas});
+                renderer.setSize( window.innerWidth, window.innerHeight );
+                document.body.appendChild( renderer.domElement );
+
+                // Creating camera
+                const fov = 80;
+                const aspect =  2;  // the canvas default
+                const near = 0.1;
+                const far = 1000;
+                const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+                camera.position.z = 15;
+
+                // Setuping orbit controls
+                const controls = new OrbitControls( camera, renderer.domElement );
+                controls.addEventListener( 'change', render );
+                
+                // Adding 3D grid
+                const size = 10;
+                const divisions = 10;
+
+                const gridHelper = new THREE.GridHelper( size, divisions );
+                const scene = new THREE.Scene();
+                scene.add( gridHelper );
+
+                //Adding 3d axes
+                const axesHelper = new THREE.AxesHelper( 10 );
+                scene.add( axesHelper );
+                // Adding basic light
+                {
+                    const color = 0xFFFFFF;
+                    const intensity = 8;
+                    const light = new THREE.DirectionalLight(color, intensity);
+                    light.position.set(0, 5, 15);
+                    scene.add(light);
+
+                    const color1 = 0xFFFFFF;
+                    const intensity1 = 8;
+                    const light1 = new THREE.DirectionalLight(color1, intensity1);
+                    light1.position.set(0, -5, -15);
+                    scene.add(light1);
+                }
+                // function animate() {
+
+                // requestAnimationFrame( animate );
+                
+                // controls.update();
+
+                // render();
+
+                // }
+                
+                function createArrow(radius, height, direction, colorValue)
+                {
+                    const coneGeometry = new THREE.ConeGeometry( radius + 0.5, 5 + (height > 10 ? 5 : 0), 15 );
+                    const coneGeometryMat = new THREE.MeshPhongMaterial( {color: colorValue} );
+                    const cone = new THREE.Mesh( coneGeometry, coneGeometryMat );
+                    //cone.translateOnAxis( (0, 5, 0), 5 );
+                    cone.position.set(0, height, 0);
+                   
+                 
+                    const geometry = new THREE.CylinderGeometry( radius - 0.5, radius - 0.5, height + (height / 2), 15 );
+                    const material = new THREE.MeshPhongMaterial( {color: colorValue} );
+                    const cylinder = new THREE.Mesh( geometry, material );                    
+                    cylinder.position.set(0, 0, 0);
+                    cone.material.color = cylinder.material.color;
+                    cylinder.add( cone );
+                    cylinder.rotation.z = direction;
+                    cylinder.rotation.x = direction;
+                    
+                    return cylinder;
+                    //scene.add( cylinder );
+                   
+
+                //    Posūkis per XZ ašis
+                   
+                }
+                function render()
+                {
+                    requestAnimationFrame(render);
+                    renderer.render( scene, camera );
+                }
+
+                var arrow = createArrow(radius, height, rotation * Math.PI / 180, "rgba("+rColor+", "+gColor+", "+bColor+", "+cAlpha+")");
+                scene.add(arrow);
+                // DAT.GUI Related Stuff
+                var gui = new dat.GUI();          
+
+                var windowGUI = gui.addFolder('Arrow');
+                windowGUI.add(arrow.material.color, 'r', 0, 255).name('R').listen();
+                windowGUI.add(arrow.material.color, 'g', 0, 255).name('G').listen();
+                windowGUI.add(arrow.material.color, 'b', 0, 255).name('B').listen();
+                // windowGUI.add(arrow.rotation, 'x', 0, 90).name('Rotation').listen(); 
+                // windowGUI.add(arrow.rotation, 'z', 0, 90).name('Rotation').listen(); 
+
+                const params = {
+                    textField: "0"
+                }
+                windowGUI.add({textField: radius}, "textField").name("radius").onFinishChange(function (value) {
+                    //Do something with the new value
+                    arrow.scale.x = parseInt(value);
+                    arrow.scale.z = parseInt(value);
+                });
+                windowGUI.add({textField: 1}, "textField").name("height").onFinishChange(function (value) {
+                    //Do something with the new value
+                    arrow.scale.y = parseInt(value);
+                });
+                windowGUI.add({textField: rotation}, "textField").name("RotationX").onFinishChange(function (value) {
+                    //Do something with the new value
+                    arrow.rotation.x = parseInt(value) * Math.PI / 180;
+                });
+                windowGUI.add({textField: rotation}, "textField").name("RotationZ").onFinishChange(function (value) {
+                    //Do something with the new value
+                    arrow.rotation.z = parseInt(value) * Math.PI / 180;
+                });
+                windowGUI.add({textField: rotation}, "textField").name("Position X").onFinishChange(function (value) {
+                    //Do something with the new value
+                    arrow.position.x = parseInt(value);
+                });
+                windowGUI.add({textField: rotation}, "textField").name("Position Y").onFinishChange(function (value) {
+                    //Do something with the new value
+                    arrow.position.y = parseInt(value);
+                });
+                windowGUI.add({textField: rotation}, "textField").name("Position Z").onFinishChange(function (value) {
+                    //Do something with the new value
+                    arrow.position.z = parseInt(value);
+                });
+                windowGUI.open();
+            
+
+                
+                render();
+                //camera.lookAt(cylinder);
+
+                // const boxWidth = 1;
+                // const boxHeight = 1;
+                // const boxDepth = 1;
+                // const geometry1 = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
+
+                // const material1 = new THREE.MeshBasicMaterial({color: 0x44aa88});  // greenish blue
+
+                // const cube = new THREE.Mesh(geometry1, material1);
+                // scene.add(cube);
+
+               
+                //document.body.appendChild(renderer.domElement);
+            }
+        
+        main();
+        </script>
+    </body>
+</html>

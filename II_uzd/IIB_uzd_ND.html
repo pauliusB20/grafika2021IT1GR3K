@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IIB uzd. ND</title>
+    <style>
+        body { margin: 0; }
+    </style>
+    <script src="lib/three.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.js" integrity="sha512-u+vtyZDzyd0zgAEffKfoNx2BnCahAOBBYvzGu6vma1B18zQ6lEGF3F6dAFvqaxDoIU/GZRxcXV5oq23OIrkQwg==" crossorigin="anonymous"></script>
+</head>
+<body>
+    <canvas id="c"></canvas>
+    <script type="module">
+         import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
+        function main()
+        {
+                const canvas = document.querySelector('#c');
+                const renderer = new THREE.WebGLRenderer({canvas});
+                renderer.setSize( window.innerWidth, window.innerHeight );
+                document.body.appendChild( renderer.domElement );
+
+                // Creating camera
+                const fov = 80;
+                const aspect =  2;  // the canvas default
+                const near = 0.1;
+                const far = 1000;
+                const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+                camera.position.z = 15;
+
+                // Setuping orbit controls
+                const controls = new OrbitControls( camera, renderer.domElement );
+                controls.addEventListener( 'change', render );
+                
+                // Adding 3D grid
+                const size = 10;
+                const divisions = 10;
+
+                const gridHelper = new THREE.GridHelper( size, divisions );
+                const scene = new THREE.Scene();
+                scene.add( gridHelper );
+
+                //Adding 3d axes
+                const axesHelper = new THREE.AxesHelper( 10 );
+                scene.add( axesHelper );
+                // Adding basic light
+                {
+                    const color = 0xFFFFFF;
+                    const intensity = 2;
+                    const light = new THREE.DirectionalLight(color, intensity);
+                    light.position.set(0, 5, 15);
+                    scene.add(light);
+
+                    const color1 = 0xFFFFFF;
+                    const intensity1 = 2;
+                    const light1 = new THREE.DirectionalLight(color1, intensity1);
+                    light1.position.set(0, -5, -15);
+                    scene.add(light1);
+                }
+                // Creating cube points
+                // Finish making cube code
+                var yPos = 0;
+                var offsetPos = 4;
+                for (var wCount = 0; wCount < 2; wCount++)
+                {         
+                    var zPos = 0;
+                    var xPos = 0;                           
+                    for (var wP = 0; wP < 4; wP++)
+                    {
+                        const geometry = new THREE.SphereGeometry( 0.5, 32, 32 ); //r, wsubdivision, hsudivision
+                        const material = new THREE.MeshPhongMaterial( {color: 0xFFFFFF} );
+                        const sphere = new THREE.Mesh( geometry, material );
+
+                        const cGeometry = new THREE.CylinderGeometry( 0.2, 0.2, offsetPos, 32 );
+                        const cMaterial = new THREE.MeshPhongMaterial( {color: 0xffffff} );
+                        const cylinder = new THREE.Mesh( cGeometry, cMaterial );                        
+                        scene.add( cylinder );
+
+                        sphere.position.set(xPos, yPos, zPos);
+                        if (zPos <= 0)
+                        {
+                            cylinder.position.set(0, yPos, offsetPos / 2);
+                            zPos += offsetPos;
+                        }
+                        else
+                        {
+                            cylinder.position.set(offsetPos / 2, yPos, 0);
+                            xPos += offsetPos;
+                            zPos -= offsetPos;
+                        }
+                        scene.add( sphere );
+                    }
+                    yPos += offsetPos;
+                }
+                
+              
+
+                function render()
+                {
+                    //requestAnimationFrame(render);
+                    renderer.render( scene, camera );
+                }
+                render();
+        }
+        main();
+    </script>
+</body>
+
+</html>
