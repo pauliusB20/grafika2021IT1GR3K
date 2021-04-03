@@ -14,12 +14,9 @@
         <script type="module">
         import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
         var radius = 1;
-        var height = 8;
-        var rotation = 0;
-        var rColor = 0;
-        var gColor = 0;
-        var bColor = 0;
-        var cAlpha = 1;
+        var height = 4;
+       
+       
         function main() {
                 // NOTE:
                 // Fix arrow height
@@ -54,30 +51,22 @@
                 // Adding basic light
                 {
                     const color = 0xFFFFFF;
-                    const intensity = 8;
+                    const intensity = 2;
                     const light = new THREE.DirectionalLight(color, intensity);
                     light.position.set(0, 5, 15);
                     scene.add(light);
 
                     const color1 = 0xFFFFFF;
-                    const intensity1 = 8;
+                    const intensity1 = 2;
                     const light1 = new THREE.DirectionalLight(color1, intensity1);
                     light1.position.set(0, -5, -15);
                     scene.add(light1);
                 }
-                // function animate() {
-
-                // requestAnimationFrame( animate );
                 
-                // controls.update();
-
-                // render();
-
-                // }
                 
                 function createArrow(radius, height, direction, colorValue)
                 {
-                    const coneGeometry = new THREE.ConeGeometry( radius + 0.5, 5 + (height > 10 ? 5 : 0), 15 );
+                    const coneGeometry = new THREE.ConeGeometry( radius + 0.5, height - 2, 10 );
                     const coneGeometryMat = new THREE.MeshPhongMaterial( {color: colorValue} );
                     const cone = new THREE.Mesh( coneGeometry, coneGeometryMat );
                     //cone.translateOnAxis( (0, 5, 0), 5 );
@@ -102,25 +91,31 @@
                 }
                 function render()
                 {
-                    requestAnimationFrame(render);
+                    setTimeout( function() {
+                         requestAnimationFrame(render);
+                    }, 1000 / 30 ); //Pagreita kadru atvaizdavima
                     renderer.render( scene, camera );
                 }
 
-                var arrow = createArrow(radius, height, rotation * Math.PI / 180, "rgba("+rColor+", "+gColor+", "+bColor+", "+cAlpha+")");
+                var arrow = createArrow(radius, height, 0, 0x000000);
                 scene.add(arrow);
                 // DAT.GUI Related Stuff
                 var gui = new dat.GUI();          
 
                 var windowGUI = gui.addFolder('Arrow');
-                windowGUI.add(arrow.material.color, 'r', 0, 255).name('R').listen();
-                windowGUI.add(arrow.material.color, 'g', 0, 255).name('G').listen();
-                windowGUI.add(arrow.material.color, 'b', 0, 255).name('B').listen();
+
+                var params = {
+                    modelcolor: "#000000"
+                };
+                windowGUI.addColor(params, 'modelcolor').name('Color')
+                .onChange(function() {
+                    arrow.material.color.set(params.modelcolor);
+                });
+               
                 // windowGUI.add(arrow.rotation, 'x', 0, 90).name('Rotation').listen(); 
                 // windowGUI.add(arrow.rotation, 'z', 0, 90).name('Rotation').listen(); 
 
-                const params = {
-                    textField: "0"
-                }
+                
                 windowGUI.add({textField: radius}, "textField").name("radius").onFinishChange(function (value) {
                     //Do something with the new value
                     arrow.scale.x = parseInt(value);
@@ -129,24 +124,31 @@
                 windowGUI.add({textField: 1}, "textField").name("height").onFinishChange(function (value) {
                     //Do something with the new value
                     arrow.scale.y = parseInt(value);
+
+                    // var childScale = 1 / (newScale * 2);
+                    // arrow.childeren[0].scale.y = childScale;
                 });
-                windowGUI.add({textField: rotation}, "textField").name("RotationX").onFinishChange(function (value) {
+                windowGUI.add({textField: 0}, "textField").name("RotationX").onFinishChange(function (value) {
                     //Do something with the new value
                     arrow.rotation.x = parseInt(value) * Math.PI / 180;
                 });
-                windowGUI.add({textField: rotation}, "textField").name("RotationZ").onFinishChange(function (value) {
+                windowGUI.add({textField: 0}, "textField").name("RotationY").onFinishChange(function (value) {
+                    //Do something with the new value
+                    arrow.rotation.y = parseInt(value) * Math.PI / 180;
+                });
+                windowGUI.add({textField: 0}, "textField").name("RotationZ").onFinishChange(function (value) {
                     //Do something with the new value
                     arrow.rotation.z = parseInt(value) * Math.PI / 180;
                 });
-                windowGUI.add({textField: rotation}, "textField").name("Position X").onFinishChange(function (value) {
+                windowGUI.add({textField: 0}, "textField").name("Position X").onFinishChange(function (value) {
                     //Do something with the new value
                     arrow.position.x = parseInt(value);
                 });
-                windowGUI.add({textField: rotation}, "textField").name("Position Y").onFinishChange(function (value) {
+                windowGUI.add({textField: 0}, "textField").name("Position Y").onFinishChange(function (value) {
                     //Do something with the new value
                     arrow.position.y = parseInt(value);
                 });
-                windowGUI.add({textField: rotation}, "textField").name("Position Z").onFinishChange(function (value) {
+                windowGUI.add({textField: 0}, "textField").name("Position Z").onFinishChange(function (value) {
                     //Do something with the new value
                     arrow.position.z = parseInt(value);
                 });
