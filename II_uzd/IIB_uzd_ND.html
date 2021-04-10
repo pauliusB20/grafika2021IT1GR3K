@@ -59,16 +59,15 @@
                     scene.add(light1);
                 }
             //     //Drawing octahedron
-            //     var geometry = new THREE.OctahedronGeometry( 5, 0 ); // or DodecahedronGeometry
-            //     const wireframe = new THREE.WireframeGeometry( geometry );
+                var geometry = new THREE.TetrahedronGeometry( 10, 0 ); // or DodecahedronGeometry
+                const wireframe = new THREE.WireframeGeometry( geometry );
 
-            //     const line = new THREE.LineSegments( wireframe );
-            //     line.material.depthTest = false;
-            //     line.material.linewidth = 0.5;
-            //     line.material.opacity = 5;
-            //     line.material.transparent = true;
-            //   //console.log(line.geometry.vertices);
-            //     scene.add( line );
+                const line = new THREE.LineSegments( wireframe );
+                line.material.depthTest = false;
+                line.material.linewidth = 0.5;
+                line.material.opacity = 5;
+                line.material.transparent = true;
+                scene.add( line );
                
        
                 function createJoint(point)
@@ -104,6 +103,27 @@
                     edge.position.z = (pointY.z + pointX.z) / 2;
                     return edge;
                 }
+                function createTetGeo(size)
+                {
+                    var pivotSphere = createJoint(new THREE.Vector3( 0, 0, 0 ));
+                    const points = [];
+                    points.push(new THREE.Vector3( -size, size, size ));
+                    points.push(new THREE.Vector3( size, size, -size ));
+                    points.push(new THREE.Vector3( size, -size, size ));
+                    points.push(new THREE.Vector3( -size, -size, -size ));
+
+                    for (var i = 0; i < points.length; i++)
+                        pivotSphere.add(createJoint(points[i]));  
+
+                    pivotSphere.add(cylinderMesh(points[2], points[3], new THREE.MeshPhongMaterial( { color: pivotSphere.material.color } )));   
+                    pivotSphere.add(cylinderMesh(points[2], points[1], new THREE.MeshPhongMaterial( { color: pivotSphere.material.color } )));  
+                    pivotSphere.add(cylinderMesh(points[3], points[1], new THREE.MeshPhongMaterial( { color: pivotSphere.material.color } )));   
+                    pivotSphere.add(cylinderMesh(points[2], points[0], new THREE.MeshPhongMaterial( { color: pivotSphere.material.color } )));  
+                    pivotSphere.add(cylinderMesh(points[3], points[0], new THREE.MeshPhongMaterial( { color: pivotSphere.material.color } )));    
+                    pivotSphere.add(cylinderMesh(points[2], points[1], new THREE.MeshPhongMaterial( { color: pivotSphere.material.color } )));  
+                    pivotSphere.add(cylinderMesh(points[1], points[0], new THREE.MeshPhongMaterial( { color: pivotSphere.material.color } )));                 
+                    return pivotSphere;
+                }
                 function createOctaTh(size)
                 {
                     var pivotSphere = createJoint(new THREE.Vector3( 0, 0, 0 ));
@@ -119,31 +139,35 @@
                         pivotSphere.add(createJoint(points[i]));                   
                     
                     
-                    pivotSphere.add(cylinderMesh(points[0], points[2], new THREE.MeshPhongMaterial( { color: 0xffffff } )));
-                    pivotSphere.add(cylinderMesh(points[2], points[1], new THREE.MeshPhongMaterial( { color: 0xffffff } )));
-                    pivotSphere.add(cylinderMesh(points[0], points[3], new THREE.MeshPhongMaterial( { color: 0xffffff } )));
-                    pivotSphere.add(cylinderMesh(points[0], points[2], new THREE.MeshPhongMaterial( { color: 0xffffff } )));
-                    pivotSphere.add(cylinderMesh(points[3], points[1], new THREE.MeshPhongMaterial( { color: 0xffffff } )));
+                    pivotSphere.add(cylinderMesh(points[0], points[2], new THREE.MeshPhongMaterial( { color: pivotSphere.material.color } )));
+                    pivotSphere.add(cylinderMesh(points[2], points[1], new THREE.MeshPhongMaterial( { color: pivotSphere.material.color } )));
+                    pivotSphere.add(cylinderMesh(points[0], points[3], new THREE.MeshPhongMaterial( { color: pivotSphere.material.color } )));
+                    pivotSphere.add(cylinderMesh(points[0], points[2], new THREE.MeshPhongMaterial( { color: pivotSphere.material.color } )));
+                    pivotSphere.add(cylinderMesh(points[3], points[1], new THREE.MeshPhongMaterial( { color: pivotSphere.material.color } )));
                    
-                    pivotSphere.add(cylinderMesh(points[0], points[4], new THREE.MeshPhongMaterial( { color: 0xffffff } )));
-                    pivotSphere.add(cylinderMesh(points[1], points[4], new THREE.MeshPhongMaterial( { color: 0xffffff } )));
-                    pivotSphere.add(cylinderMesh(points[2], points[4], new THREE.MeshPhongMaterial( { color: 0xffffff } )));
-                    pivotSphere.add(cylinderMesh(points[3], points[4], new THREE.MeshPhongMaterial( { color: 0xffffff } )));
+                    pivotSphere.add(cylinderMesh(points[0], points[4], new THREE.MeshPhongMaterial( { color: pivotSphere.material.color } )));
+                    pivotSphere.add(cylinderMesh(points[1], points[4], new THREE.MeshPhongMaterial( { color: pivotSphere.material.color } )));
+                    pivotSphere.add(cylinderMesh(points[2], points[4], new THREE.MeshPhongMaterial( { color: pivotSphere.material.color } )));
+                    pivotSphere.add(cylinderMesh(points[3], points[4], new THREE.MeshPhongMaterial( { color: pivotSphere.material.color } )));
                     
-                    pivotSphere.add(cylinderMesh(points[0], points[5], new THREE.MeshPhongMaterial( { color: 0xffffff } )));
-                    pivotSphere.add(cylinderMesh(points[1], points[5], new THREE.MeshPhongMaterial( { color: 0xffffff } )));
-                    pivotSphere.add(cylinderMesh(points[2], points[5], new THREE.MeshPhongMaterial( { color: 0xffffff } )));
-                    pivotSphere.add(cylinderMesh(points[3], points[5], new THREE.MeshPhongMaterial( { color: 0xffffff } )));
+                    pivotSphere.add(cylinderMesh(points[0], points[5], new THREE.MeshPhongMaterial( { color: pivotSphere.material.color } )));
+                    pivotSphere.add(cylinderMesh(points[1], points[5], new THREE.MeshPhongMaterial( { color: pivotSphere.material.color } )));
+                    pivotSphere.add(cylinderMesh(points[2], points[5], new THREE.MeshPhongMaterial( { color: pivotSphere.material.color } )));
+                    pivotSphere.add(cylinderMesh(points[3], points[5], new THREE.MeshPhongMaterial( { color: pivotSphere.material.color } )));
                   
                     return pivotSphere;
                 }
 
                 var octGeo = createOctaTh(10);
-                // octGeo.scale.x = 1;
-                // octGeo.scale.y = 1;
-                // octGeo.scale.z = 1;
+                octGeo.scale.x = 0.2;
+                octGeo.scale.y = 0.2;
+                octGeo.scale.z = 0.2;
                 scene.add(octGeo);
-             
+                var tetGeo = createTetGeo(5); 
+                tetGeo.scale.x = 0.4;
+                tetGeo.scale.y = 0.4;
+                tetGeo.scale.z = 0.4;           
+                scene.add(tetGeo);
                 
               
 
