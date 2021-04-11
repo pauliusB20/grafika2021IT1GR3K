@@ -279,28 +279,82 @@
                     return pivotSphere;
                 }
 
-                var octGeo = createOctaTh(10, 0xffffff);
+                var octGeo = createOctaTh(10, 0xffffff); //octahedron
                 octGeo.scale.x = 0.2;
                 octGeo.scale.y = 0.2;
                 octGeo.scale.z = 0.2;
                 scene.add(octGeo);
-                var tetGeo = createTetGeo(5, 0xff0000); 
+                var tetGeo = createTetGeo(5, 0xff0000); //tetrahedron
                 tetGeo.scale.x = 0.4;
                 tetGeo.scale.y = 0.4;
                 tetGeo.scale.z = 0.4;           
                 scene.add(tetGeo);                
               
-                var box = createBoxGeo(5, 0xfff000);
-                box.scale.x = 0.4;
-                box.scale.y = 0.4;
-                box.scale.z = 0.4;
-                scene.add(box);
+                var boxHex = createBoxGeo(5, 0xfff000); //heksaedras
+                boxHex.scale.x = 0.4;
+                boxHex.scale.y = 0.4;
+                boxHex.scale.z = 0.4;
+                scene.add(boxHex);
 
-                var icoGeo = createIcoGeo(5, 0x00ff00);
+                var icoGeo = createIcoGeo(5, 0x00ff00);//icosohedras
                 icoGeo.scale.x = 0.42;
                 icoGeo.scale.y = 0.42;
                 icoGeo.scale.z = 0.42;
                 scene.add(icoGeo);
+
+                
+                octGeo.visible =false;
+                tetGeo.visible =false;
+                boxHex.visible =false;
+                icoGeo.visible =false;
+                
+                var gui = new dat.GUI();
+
+                var windowGui = gui.addFolder('II uzd. B dalis. Geometrija');
+
+                windowGui.add({textBox: false}, 'textBox').name('Octahedron').listen().onChange( function(val) {
+                   if (val)
+                   {
+                    octGeo.visible =true;
+                   }
+                   else
+                   {
+                    octGeo.visible =false;
+                   }
+                });
+
+                windowGui.add({textBox: false}, 'textBox').name('Tetrahedron').listen().onChange( function(val) {
+                   if (val)
+                   {
+                    tetGeo.visible =true;
+                   }
+                   else
+                   {
+                    tetGeo.visible =false;
+                   } 
+                });
+
+                windowGui.add({textBox: false}, 'textBox').name('Hexahedron').listen().onChange( function(val) {
+                   if (val)
+                   {
+                    boxHex.visible =true;
+                   }
+                   else
+                   {
+                    boxHex.visible =false;
+                   } 
+                });
+
+                windowGui.add({textBox: false}, 'textBox').name('Icosahedron').listen().onChange( function(val) {
+                   if (val)
+                   {
+                    icoGeo.visible =true;
+                   }
+                   else
+                   {
+                    icoGeo.visible =false;
+                   } 
+                });
 
                 function render()
                 {
