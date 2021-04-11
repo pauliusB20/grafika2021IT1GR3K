@@ -43,6 +43,7 @@
 
                 const gridHelper = new THREE.GridHelper( size, divisions );
                 const scene = new THREE.Scene();
+                scene.background = new THREE.Color(0xffffff);
                 scene.add( gridHelper );
 
                 //Adding 3d axes

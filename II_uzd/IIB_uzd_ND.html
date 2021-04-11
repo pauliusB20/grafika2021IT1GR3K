@@ -39,6 +39,7 @@
 
                 const gridHelper = new THREE.GridHelper( size, divisions );
                 const scene = new THREE.Scene();
+                scene.background = new THREE.Color(0xffffff);
                 scene.add( gridHelper );
 
                 //Adding 3d axes
@@ -279,7 +280,7 @@
                     return pivotSphere;
                 }
 
-                var octGeo = createOctaTh(10, 0xffffff); //octahedron
+                var octGeo = createOctaTh(10, 0x0000ff); //octahedron
                 octGeo.scale.x = 0.2;
                 octGeo.scale.y = 0.2;
                 octGeo.scale.z = 0.2;
@@ -310,7 +311,7 @@
                 
                 var gui = new dat.GUI();
 
-                var windowGui = gui.addFolder('II uzd. B dalis. Geometrija');
+                var windowGui = gui.addFolder('II task. B part. Geometry');
 
                 windowGui.add({textBox: false}, 'textBox').name('Octahedron').listen().onChange( function(val) {
                    if (val)
