@@ -120,12 +120,12 @@
                 var gtitle1 = windowGUI.addFolder('Main parameters');
                 gtitle1.add({textField: radius}, "textField").name("radius").onFinishChange(function (value) {
                     //Do something with the new value
-                    arrow.scale.x = parseInt(value);
-                    arrow.scale.z = parseInt(value);
+                    arrow.scale.x = value;
+                    arrow.scale.z = value;
                 });
                 gtitle1.add({textField: 1}, "textField").name("height").onFinishChange(function (value) {
                     //Do something with the new value
-                    arrow.scale.y = parseInt(value);
+                    arrow.scale.y = value;
 
                     
                 });
