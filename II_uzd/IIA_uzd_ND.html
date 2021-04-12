@@ -103,7 +103,7 @@
                 // DAT.GUI Related Stuff
                 var gui = new dat.GUI();          
 
-                var gtitle = gui.addFolder('3D arrow');
+                var gtitle = gui.addFolder('IIA Task. 3D arrow');
                 var windowGUI = gtitle.addFolder('Color');
 
                 var params = {
@@ -127,19 +127,18 @@
                     //Do something with the new value
                     arrow.scale.y = parseInt(value);
 
-                    // var childScale = 1 / (newScale * 2);
-                    // arrow.childeren[0].scale.y = childScale;
+                    
                 });
                 var gtitle2 = gtitle1.addFolder('Direction'); 
-                gtitle2.add({textField: 0}, "textField").name("RotationX").onFinishChange(function (value) {
+                gtitle2.add({textField: 0}, "textField").name("RotationX(Degrees)").onFinishChange(function (value) {
                     //Do something with the new value
                     arrow.rotation.x = parseInt(value) * Math.PI / 180;
                 });
-                gtitle2.add({textField: 0}, "textField").name("RotationY").onFinishChange(function (value) {
+                gtitle2.add({textField: 0}, "textField").name("RotationY(Degrees)").onFinishChange(function (value) {
                     //Do something with the new value
                     arrow.rotation.y = parseInt(value) * Math.PI / 180;
                 });
-                gtitle2.add({textField: 0}, "textField").name("RotationZ").onFinishChange(function (value) {
+                gtitle2.add({textField: 0}, "textField").name("RotationZ(Degrees)").onFinishChange(function (value) {
                     //Do something with the new value
                     arrow.rotation.z = parseInt(value) * Math.PI / 180;
                 });

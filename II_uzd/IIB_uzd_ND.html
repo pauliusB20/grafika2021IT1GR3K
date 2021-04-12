@@ -81,10 +81,10 @@
                     return  s;
                 }
                 
-                function cylinderMesh(pointX, pointY, material) {
-                    var direction = new THREE.Vector3().subVectors(pointY, pointX);
+                function cylinderMesh(pointA, pointB, material) {
+                    var direction = new THREE.Vector3().subVectors(pointB, pointA);
                     var orientation = new THREE.Matrix4();
-                    orientation.lookAt(pointX, pointY, new THREE.Object3D().up);
+                    orientation.lookAt(pointA, pointB, new THREE.Object3D().up);
                     orientation.multiply(new THREE.Matrix4().set(1, 0, 0, 0,
                         0, 0, 1, 0,
                         0, -1, 0, 0,
@@ -93,12 +93,12 @@
                     var edge = new THREE.Mesh(edgeGeometry, material);
                     edge.applyMatrix(orientation);
                     // position based on midpoints - there may be a better solution than this
-                    edge.position.x = (pointY.x + pointX.x) / 2;
-                    edge.position.y = (pointY.y + pointX.y) / 2;
-                    edge.position.z = (pointY.z + pointX.z) / 2;
+                    edge.position.x = (pointB.x + pointA.x) / 2;
+                    edge.position.y = (pointB.y + pointA.y) / 2;
+                    edge.position.z = (pointB.z + pointA.z) / 2;
                     return edge;
                 }
-                function createTetGeo(size, colorValue)
+                function createTetGeo(size, colorValue) //Tetrahedro sukurimui
                 {
                     var pivotSphere = createJoint(new THREE.Vector3( 0, 0, 0 ), "rgba(0, 0, 0, 0)", 0);
                     const points = [];
@@ -121,7 +121,7 @@
                     pivotSphere.add(cylinderMesh(points[1], points[0], new THREE.MeshPhongMaterial( { color: colorValue } )));                 
                     return pivotSphere;
                 }
-                function createOctaTh(size, colorValue)
+                function createOctaTh(size, colorValue) //Octahedro sukurimui
                 {
                     var pivotSphere = createJoint(new THREE.Vector3( 0, 0, 0 ), "rgba(0, 0, 0, 0)", 0);                    
                     const points = [];
@@ -155,7 +155,7 @@
                     return pivotSphere;
                 }
                 //Box geometry creation
-                function createBoxGeo(size, colorValue)
+                function createBoxGeo(size, colorValue) //Heksaedro sukurimui
                 {
                     var pivotSphere = createJoint(new THREE.Vector3( 0, 0, 0 ), "rgba(0, 0, 0, 0)", 0);
                     const points = [];
@@ -192,7 +192,7 @@
 
                     return pivotSphere;
                 }
-                function createIcoGeo(size, colorValue)
+                function createIcoGeo(size, colorValue) //Ikosohedro sukurimui
                 {
                     var pivotSphere = createJoint(new THREE.Vector3( 0, 0, 0 ), "rgba(0, 0, 0, 0)", 0);
                     const points = [];
@@ -224,7 +224,7 @@
                      // 2 triangle
                     pivotSphere.add(cylinderMesh(points[0], points[3], new THREE.MeshPhongMaterial( { color: colorValue } )));
                     pivotSphere.add(cylinderMesh(points[1], points[3], new THREE.MeshPhongMaterial( { color: colorValue } )));
-                    pivotSphere.add(cylinderMesh(points[1], points[3], new THREE.MeshPhongMaterial( { color: colorValue } )));
+                    //pivotSphere.add(cylinderMesh(points[1], points[3], new THREE.MeshPhongMaterial( { color: colorValue } )));
 
                      // 3 triangle
                     pivotSphere.add(cylinderMesh(points[0], points[4], new THREE.MeshPhongMaterial( { color: colorValue } )));
@@ -282,32 +282,32 @@
 
                 var octGeo = createOctaTh(10, 0x0000ff); //octahedron
                 octGeo.scale.x = 0.2;
-                octGeo.scale.y = 0.2;
+                octGeo.scale.y = 0.2; //Dydziai talpinimui
                 octGeo.scale.z = 0.2;
                 scene.add(octGeo);
                 var tetGeo = createTetGeo(5, 0xff0000); //tetrahedron
                 tetGeo.scale.x = 0.4;
-                tetGeo.scale.y = 0.4;
+                tetGeo.scale.y = 0.4; //Dydziai talpinimui
                 tetGeo.scale.z = 0.4;           
                 scene.add(tetGeo);                
               
                 var boxHex = createBoxGeo(5, 0xfff000); //heksaedras
                 boxHex.scale.x = 0.4;
-                boxHex.scale.y = 0.4;
+                boxHex.scale.y = 0.4; //Dydziai talpinimui
                 boxHex.scale.z = 0.4;
                 scene.add(boxHex);
 
                 var icoGeo = createIcoGeo(5, 0x00ff00);//icosohedras
                 icoGeo.scale.x = 0.42;
-                icoGeo.scale.y = 0.42;
+                icoGeo.scale.y = 0.42; //Dydziai talpinimui
                 icoGeo.scale.z = 0.42;
                 scene.add(icoGeo);
 
                 
-                octGeo.visible =false;
-                tetGeo.visible =false;
-                boxHex.visible =false;
-                icoGeo.visible =false;
+                octGeo.visible = false;
+                tetGeo.visible = false;
+                boxHex.visible = false;
+                icoGeo.visible = false;
                 
                 var gui = new dat.GUI();
 
@@ -324,8 +324,8 @@
                    }
                 });
 
-                windowGui.add({textBox: false}, 'textBox').name('Tetrahedron').listen().onChange( function(val) {
-                   if (val)
+                windowGui.add({textBox: false}, 'textBox').name('Tetrahedron').listen().onChange( function(exist) {
+                   if (exist)
                    {
                     tetGeo.visible =true;
                    }
@@ -335,8 +335,8 @@
                    } 
                 });
 
-                windowGui.add({textBox: false}, 'textBox').name('Hexahedron').listen().onChange( function(val) {
-                   if (val)
+                windowGui.add({textBox: false}, 'textBox').name('Hexahedron').listen().onChange( function(exist) {
+                   if (exist)
                    {
                     boxHex.visible =true;
                    }
@@ -346,8 +346,8 @@
                    } 
                 });
 
-                windowGui.add({textBox: false}, 'textBox').name('Icosahedron').listen().onChange( function(val) {
-                   if (val)
+                windowGui.add({textBox: false}, 'textBox').name('Icosahedron').listen().onChange( function(exist) {
+                   if (exist)
                    {
                     icoGeo.visible =true;
                    }
