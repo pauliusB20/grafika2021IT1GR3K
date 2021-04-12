@@ -73,7 +73,6 @@
                     const coneGeometry = new THREE.ConeGeometry( radius, height + 1, 10 );
                     const coneGeometryMat = new THREE.MeshPhongMaterial( {color: colorValue} );
                     const cone = new THREE.Mesh( coneGeometry, coneGeometryMat );
-                    //cone.translateOnAxis( (0, 5, 0), 5 );
                     cone.position.set(0, height + 1, 0);
                    
                  
@@ -82,16 +81,11 @@
                     const cylinder = new THREE.Mesh( geometry, material );                    
                     cylinder.position.set(0, height - height/4, 0);
                     cone.material.color = cylinder.material.color;
-                    //cylinder.add( cone );
                     
                     const arrow = new THREE.Group();
                     arrow.add( cone );
                     arrow.add( cylinder );
                     return arrow;
-                    //scene.add( cylinder );
-                   
-
-                //    Posūkis per XZ ašis
                    
                 }
                 function render()
@@ -125,11 +119,11 @@
                 // windowGUI.add(arrow.rotation, 'z', 0, 90).name('Rotation').listen(); 
 
                 var gtitle1 = windowGUI.addFolder('Main parameters');
+                
                 const rParam = {
                     radius: 1
                 };
                 gtitle1.add(rParam, "radius").min(1).max(6).onFinishChange(function (value) {
-                    //Do something with the new value
                     arrow.scale.x = value;
                     arrow.scale.z = value;
                 });
@@ -137,42 +131,33 @@
                     height: 1
                 };
                 gtitle1.add(hParam, "height").min(1).max(10).onFinishChange(function (value) {
-                    //Do something with the new value                    
                     arrow.scale.y = value;
                     arrow.children[0].scale.y = 1/2;
                    
                 });
                 var gtitle2 = gtitle1.addFolder('Direction'); 
                 gtitle2.add({textField: 0}, "textField").name("RotationX(Degrees)").onFinishChange(function (value) {
-                    //Do something with the new value
                     arrow.rotation.x = parseInt(value) * Math.PI / 180;
                 });
                 gtitle2.add({textField: 0}, "textField").name("RotationY(Degrees)").onFinishChange(function (value) {
-                    //Do something with the new value
                     arrow.rotation.y = parseInt(value) * Math.PI / 180;
                 });
                 gtitle2.add({textField: 0}, "textField").name("RotationZ(Degrees)").onFinishChange(function (value) {
-                    //Do something with the new value
                     arrow.rotation.z = parseInt(value) * Math.PI / 180;
                 });
                 var gtitle3 = gtitle2.addFolder('Origin');
                 gtitle3.add({textField: 0}, "textField").name("Position X").onFinishChange(function (value) {
-                    //Do something with the new value
                     arrow.position.x = parseInt(value);
                 });
                 gtitle3.add({textField: 0}, "textField").name("Position Y").onFinishChange(function (value) {
-                    //Do something with the new value
                     arrow.position.y = parseInt(value);
                 });
                 gtitle3.add({textField: 0}, "textField").name("Position Z").onFinishChange(function (value) {
-                    //Do something with the new value
                     arrow.position.z = parseInt(value);
                 });
                 windowGUI.open();
             
                
-                
-               // scene.add( helper );
                 render();
                 
             }
