@@ -1,3 +1,4 @@
+<!-- Pataisyti krypti ir pridėti normales vektorius -->
 <!DOCTYPE html>
 <html>
 	<head>
@@ -11,11 +12,12 @@
 	</head>
 	<body>
         <canvas id="c"></canvas>
-        <script type="module">
+        <script type="module">            
         import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
+       // import * as VertexNormalsHelper from "./lib/vertexnormal.js";
         //default parameters
         var radius = 1;
-        var height = 4;
+        var height = 1;
        
        
         function main() {
@@ -66,25 +68,26 @@
                 }
                 
                 
-                function createArrow(radius, height, direction, colorValue)
+                function createArrow(radius, height, colorValue)
                 {
-                    const coneGeometry = new THREE.ConeGeometry( radius, height - height / 2, 10 );
+                    const coneGeometry = new THREE.ConeGeometry( radius, height + 1, 10 );
                     const coneGeometryMat = new THREE.MeshPhongMaterial( {color: colorValue} );
                     const cone = new THREE.Mesh( coneGeometry, coneGeometryMat );
                     //cone.translateOnAxis( (0, 5, 0), 5 );
-                    cone.position.set(0, height, 0);
+                    cone.position.set(0, height + 1, 0);
                    
                  
                     const geometry = new THREE.CylinderGeometry( radius - 0.5, radius - 0.5, height + (height / 2), 15 );
                     const material = new THREE.MeshPhongMaterial( {color: colorValue} );
                     const cylinder = new THREE.Mesh( geometry, material );                    
-                    cylinder.position.set(0, 0, 0);
+                    cylinder.position.set(0, height - height/4, 0);
                     cone.material.color = cylinder.material.color;
-                    cylinder.add( cone );
-                    cylinder.rotation.z = direction;
-                    cylinder.rotation.x = direction;
+                    //cylinder.add( cone );
                     
-                    return cylinder;
+                    const arrow = new THREE.Group();
+                    arrow.add( cone );
+                    arrow.add( cylinder );
+                    return arrow;
                     //scene.add( cylinder );
                    
 
@@ -101,6 +104,7 @@
 
                 var arrow = createArrow(radius, height, 0, 0x000000);
                 scene.add(arrow);
+                //console.log(arrow.children);
                 // DAT.GUI Related Stuff
                 var gui = new dat.GUI();          
 
@@ -112,23 +116,31 @@
                 };
                 windowGUI.addColor(params, 'modelcolor').name('Color')
                 .onChange(function() {
-                    arrow.material.color.set(params.modelcolor);
+                    //arrow.material.color.set(params.modelcolor);
+                    arrow.children[0].material.color.set(params.modelcolor);
+                    arrow.children[1].material.color.set(params.modelcolor);
                 });
                
                 // windowGUI.add(arrow.rotation, 'x', 0, 90).name('Rotation').listen(); 
                 // windowGUI.add(arrow.rotation, 'z', 0, 90).name('Rotation').listen(); 
 
                 var gtitle1 = windowGUI.addFolder('Main parameters');
-                gtitle1.add({textField: radius}, "textField").name("radius").onFinishChange(function (value) {
+                const rParam = {
+                    radius: 1
+                };
+                gtitle1.add(rParam, "radius").min(1).max(6).onFinishChange(function (value) {
                     //Do something with the new value
                     arrow.scale.x = value;
                     arrow.scale.z = value;
                 });
-                gtitle1.add({textField: 1}, "textField").name("height").onFinishChange(function (value) {
-                    //Do something with the new value
+                const hParam = {
+                    height: 1
+                };
+                gtitle1.add(hParam, "height").min(1).max(10).onFinishChange(function (value) {
+                    //Do something with the new value                    
                     arrow.scale.y = value;
-
-                    
+                    arrow.children[0].scale.y = 1/2;
+                   
                 });
                 var gtitle2 = gtitle1.addFolder('Direction'); 
                 gtitle2.add({textField: 0}, "textField").name("RotationX(Degrees)").onFinishChange(function (value) {
@@ -158,23 +170,11 @@
                 });
                 windowGUI.open();
             
-
-                
-                render();
-                //camera.lookAt(cylinder);
-
-                // const boxWidth = 1;
-                // const boxHeight = 1;
-                // const boxDepth = 1;
-                // const geometry1 = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
-
-                // const material1 = new THREE.MeshBasicMaterial({color: 0x44aa88});  // greenish blue
-
-                // const cube = new THREE.Mesh(geometry1, material1);
-                // scene.add(cube);
-
                
-                //document.body.appendChild(renderer.domElement);
+                
+               // scene.add( helper );
+                render();
+                
             }
         
         main();
