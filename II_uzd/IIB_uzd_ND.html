@@ -59,7 +59,9 @@
                     light1.position.set(0, -5, -15);
                     scene.add(light1);
                 }
-            //     //Drawing octahedron
+
+
+                //Testavimui nubrėžimas vėlinis modelis
                 // var geometry = new THREE.IcosahedronGeometry( 10, 0 ); // or DodecahedronGeometry
                 // //For visual understanding
                 // const wireframe = new THREE.WireframeGeometry( geometry );
@@ -80,8 +82,12 @@
                     s.position.set(point.x, point.y, point.z);
                     return  s;
                 }
-                
-                function cylinderMesh(pointA, pointB, material) {
+                //Norint nuprėžti cilindrine 3d atkarpa, naudojami du taškai xyz, 
+                //Sukuriama jiems transformacijų vietinę matrica 4x4, 
+                //kuri veliau bus padauginta is 
+                //Naujos transformacijų matricos, tam kad nustatyti atkarpos krypti
+                //Po krypties nustatymo apskaiciuojamas vidurio taskas tarp dviejų duotu tasku
+                function cylinderMesh(pointA, pointB, material) { 
                     var direction = new THREE.Vector3().subVectors(pointB, pointA);
                     var orientation = new THREE.Matrix4();
                     orientation.lookAt(pointA, pointB, new THREE.Object3D().up);
@@ -121,7 +127,7 @@
                     pivotSphere.add(cylinderMesh(points[1], points[0], new THREE.MeshPhongMaterial( { color: colorValue } )));                 
                     return pivotSphere;
                 }
-                function createOctaTh(size, colorValue) //Octahedro sukurimui
+                function createOctaGeo(size, colorValue) //Octahedro sukurimui
                 {
                     var pivotSphere = createJoint(new THREE.Vector3( 0, 0, 0 ), "rgba(0, 0, 0, 0)", 0);                    
                     const points = [];
@@ -280,10 +286,10 @@
                     return pivotSphere;
                 }
 
-                var octGeo = createOctaTh(10, 0x0000ff); //octahedron
-                octGeo.scale.x = 0.2;
-                octGeo.scale.y = 0.2; //Dydziai talpinimui
-                octGeo.scale.z = 0.2;
+                var octGeo = createOctaGeo(5, 0x0000ff); //octahedron
+                octGeo.scale.x = 0.4;
+                octGeo.scale.y = 0.4; //Dydziai talpinimui
+                octGeo.scale.z = 0.4;
                 scene.add(octGeo);
                 var tetGeo = createTetGeo(5, 0xff0000); //tetrahedron
                 tetGeo.scale.x = 0.4;
