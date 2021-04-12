@@ -67,7 +67,7 @@
                 
                 function createArrow(radius, height, direction, colorValue)
                 {
-                    const coneGeometry = new THREE.ConeGeometry( radius + 0.5, height - 2, 10 );
+                    const coneGeometry = new THREE.ConeGeometry( radius, height - 2, 10 );
                     const coneGeometryMat = new THREE.MeshPhongMaterial( {color: colorValue} );
                     const cone = new THREE.Mesh( coneGeometry, coneGeometryMat );
                     //cone.translateOnAxis( (0, 5, 0), 5 );
