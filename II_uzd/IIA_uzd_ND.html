@@ -82,6 +82,7 @@
                     cylinder.position.set(0, height - height/4, 0);
                     cone.material.color = cylinder.material.color;
                     
+                    //Sugrupuojami 3D objektai cilindras ir kūgis
                     const arrow = new THREE.Group();
                     arrow.add( cone );
                     arrow.add( cylinder );
@@ -113,10 +114,8 @@
                     //arrow.material.color.set(params.modelcolor);
                     arrow.children[0].material.color.set(params.modelcolor);
                     arrow.children[1].material.color.set(params.modelcolor);
-                });
-               
-                // windowGUI.add(arrow.rotation, 'x', 0, 90).name('Rotation').listen(); 
-                // windowGUI.add(arrow.rotation, 'z', 0, 90).name('Rotation').listen(); 
+                });               
+                
 
                 var gtitle1 = windowGUI.addFolder('Main parameters');
                 
@@ -135,7 +134,7 @@
                     arrow.children[0].scale.y = 1/2;
                    
                 });
-                var gtitle2 = gtitle1.addFolder('Direction'); 
+                var gtitle2 = gtitle1.addFolder('Direction');                 
                 gtitle2.add({textField: 0}, "textField").name("RotationX(Degrees)").onFinishChange(function (value) {
                     arrow.rotation.x = parseInt(value) * Math.PI / 180;
                 });
