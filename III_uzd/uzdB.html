@@ -6,7 +6,7 @@
 		<style>
 			body { margin: 0; }
 		</style>
-        <!-- <script src="lib/three.js"></script> -->
+        <script src="lib/Tween.js"></script> 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.js" integrity="sha512-u+vtyZDzyd0zgAEffKfoNx2BnCahAOBBYvzGu6vma1B18zQ6lEGF3F6dAFvqaxDoIU/GZRxcXV5oq23OIrkQwg==" crossorigin="anonymous"></script>
        
     </head>
@@ -22,7 +22,12 @@
                 //For animation switching
                 var goBackDolly = false;
                 var goBackFollow = false;
-              
+                var dollyStarted = false;
+                var followStarted = false;
+                //Animation speed parameters
+                const dollyZoomSpeed = 0.1;
+                const dollyZoomCoef = 0.25;
+                const followSpeed = 0.2;
 
                 const canvas = document.querySelector('#c');
                 const renderer = new THREE.WebGLRenderer({canvas});
@@ -34,11 +39,7 @@
                 const aspect =  2;  // the canvas default
                 const near = 0.1;
                 const far = 1000;
-
-                //Camera for navigation
-                // const c0 = new THREE.PerspectiveCamera(fov, aspect, near, far);
-                // c0.position.z = 20;
-                // Creating camera
+                
                
                 //Bendro vaizdo kamera
                 const c1 = new THREE.PerspectiveCamera(fov, aspect, near, far);
@@ -113,7 +114,7 @@
                 scene.add(c3);
 
                 //Sachmatu lenta
-                function createCheckerBoard(sizeX, sizeZ)
+                function createChessBoard(sizeX, sizeZ)
                 {
                     const board = new THREE.Group();
                     var sideColors = [0x000000, 0xffffff];
@@ -142,41 +143,49 @@
                 {
                     const rikis = new THREE.Group();
 
-                    const geometry = new THREE.SphereGeometry( 1.75, 32, 32 );
-                    const material = new THREE.MeshPhongMaterial( {color: 0x000000} );
-                    const sphere = new THREE.Mesh( geometry, material );
-                    sphere.position.y = 4;
-                    rikis.add(sphere);
-
-                    const cgeometry = new THREE.ConeGeometry( 3, 6, 30 );
-                    const cmaterial = new THREE.MeshPhongMaterial( {color: 0x000000} );
-                    const cone = new THREE.Mesh( cgeometry, cmaterial );
-                    cone.position.y = 3;
-                    rikis.add(cone);
-
-                    const cygeometry = new THREE.CylinderGeometry( 2, 2, 3, 32 );
-                    const cymaterial = new THREE.MeshPhongMaterial( {color: 0x000000} );
-                    const cylinder = new THREE.Mesh( cygeometry, cymaterial );
-                    rikis.add(cylinder);
+					const rikisMat = new THREE.MeshPhongMaterial( {color: 0x000000} );
+				
+					const bottomRikisGeometry = new THREE.CylinderGeometry( 1.5, 2.5, 1, 32 );
+					const bottomMesh = new THREE.Mesh( bottomRikisGeometry, rikisMat );
+					bottomMesh.position.y = 0.625;
+					rikis.add(bottomMesh);
+					
+					const cylinderGeometry = new THREE.CylinderGeometry( 1.25, 1.25, 3, 32 );
+					const cylinder = new THREE.Mesh( cylinderGeometry, rikisMat );
+					cylinder.position.y = 2.5;
+					rikis.add(cylinder);
+					
+					const biggerCylinderGeometry = new THREE.CylinderGeometry( 2, 2, 0.5, 32 );
+					const biggerCylinder = new THREE.Mesh( biggerCylinderGeometry, rikisMat );
+					biggerCylinder.position.y = 3;
+					rikis.add(biggerCylinder);
+					
+					const headBottomGeometry = new THREE.CylinderGeometry( 2, 1.25, 0.5, 32 );
+					const headBottom = new THREE.Mesh( headBottomGeometry, rikisMat );
+					headBottom.position.y = 4.25;
+					rikis.add(headBottom);
+					
+					const headTopGeometry = new THREE.CylinderGeometry( 0, 2, 1.5, 32 );
+					const headTop = new THREE.Mesh( headTopGeometry, rikisMat );
+					headTop.position.y = 5.25;
+					rikis.add(headTop);
 
                     return rikis;
                 }
-                
-               //NOTE: Apply when certain condition is met
                 
                let clock = new THREE.Clock();
                let delta = 0;
                //30 fps
                let interval = 1 / 30;               
                
-                function viewScene()
+               function viewCamera()
                 {
-                    requestAnimationFrame(viewScene);
+                    requestAnimationFrame(viewCamera);
                     render(c1);
                 }
                 function doolyZoomAnim()
                 {
-                    requestAnimationFrame(doolyZoomAnim);
+                    requestAnimationFrame(doolyZoomAnim);                   
                     render(c2);
 
                     if(c2.position.x <= -35 && c2.position.z <= -35)
@@ -190,37 +199,39 @@
                     }
                      if (!goBackDolly)
                     {
-                        c2.position.x -= 0.10;
-                        c2.position.z -= 0.10;
+                        c2.position.x -= dollyZoomSpeed;
+                        c2.position.z -= dollyZoomSpeed;
 
-                        c2.fov -= 0.25;
+                        c2.fov -= dollyZoomCoef;
                         c2.updateProjectionMatrix();
                     }                    
                     if (goBackDolly)
                     {
-                        c2.position.x += 0.10;
-                        c2.position.z += 0.10;
+                        c2.position.x += dollyZoomSpeed;
+                        c2.position.z += dollyZoomSpeed;
 
-                        c2.fov += 0.25;
+                        c2.fov += dollyZoomCoef;
                         c2.updateProjectionMatrix();
                     } 
                 }
 
-                const checkerBoard = createCheckerBoard(40, 40);
+                const checkerBoard = createChessBoard(40, 40);
                 scene.add(checkerBoard);
 
                 const spawnRikis = createRikis();
-                spawnRikis.position.y = 2;
+                spawnRikis.scale.y = 2;
+                spawnRikis.position.y = 0;
                 spawnRikis.position.x = 0;
                 spawnRikis.position.z = 0;
 
                 scene.add(spawnRikis);
 
+               
                 function cameraFollow()
                 {
                     requestAnimationFrame(cameraFollow);
                     render(c3);
-
+                   
                     c3.lookAt(spawnRikis.position);                   
                     
                     if (spawnRikis.position.x >= 35 && spawnRikis.position.z >= 35)
@@ -234,18 +245,18 @@
 
                     if (!goBackFollow)
                     {
-                        spawnRikis.position.x += 0.2;
-                        spawnRikis.position.z += 0.2;
+                        spawnRikis.position.x += followSpeed;
+                        spawnRikis.position.z += followSpeed;
                     }
                     else
                     {
-                        spawnRikis.position.x -= 0.2;
-                        spawnRikis.position.z -= 0.2;
+                        spawnRikis.position.x -= followSpeed;
+                        spawnRikis.position.z -= followSpeed;
                     }
                    
                 }
 
-                 //Simple UI
+                 //Scene GUI
                 var gui = new dat.GUI();
 
                 var windowGui = gui.addFolder('III task. B part. Camera');
@@ -253,25 +264,51 @@
                 var mainSceneCam = windowGui.addFolder("Main scene camera");
 
                 mainSceneCam.add({ add:function(){
-                    viewScene();
-                     
+
+                     viewCamera();
+
                 }}, "add").name("View");
                 
                 var dollyZoomCam = windowGui.addFolder("Dolly zoom camera");
 
                 dollyZoomCam.add({ add:function(){
-                    doolyZoomAnim();
+                    
+                    
+                    if (dollyStarted)
+                    {
+                        dollyStarted = false;
+                        doolyZoomAnim();
+                    }
+                    else
+                    {
+                        dollyStarted = true;
+                        doolyZoomAnim();
+                    }
+                    
+                   // viewScene(c2);
+
                 }}, "add").name("View");
 
-                var followCam = windowGui.addFolder("Follow camera");
+                var followCam = windowGui.addFolder("Camera follow");
                 followCam.add({ add:function(){
-
-                    cameraFollow(spawnRikis);
+                   
+                    if (followStarted)
+                    {
+                        followStarted = false;
+                        cameraFollow();
+                    }
+                    else
+                    {
+                        followStarted = true;
+                        cameraFollow();
+                    }
+                    //viewScene(c3);
 
                 }}, "add").name("View");
                 
-                render(c1);
+                
 
+                
                 function update(camera) {
                     requestAnimationFrame(update);
                     delta += clock.getDelta();
@@ -287,6 +324,9 @@
                 {
                     renderer.render( scene, camera );
                 }
+
+                render(c1);
+               
             }
             main();
         </script>

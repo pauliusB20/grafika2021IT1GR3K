@@ -85,45 +85,71 @@
                 // const ellipse = new THREE.Line( geometry, material );
 
             //    var height = 10;
+            
                 var r = 5;
                
                 var points = [];
            
                for(let i = 0; i <= 360; i++){
-                    points.push(new THREE.Vector3(Math.sin(i*Math.PI/180) * r, 0, Math.cos(i*Math.PI/180)*r));
+                    var x = Math.sin(i*Math.PI/180) * r;
+                    var z = Math.cos(i*Math.PI/180) * r;
+                    // var x = getRandomInt(-r, r);
+                    // var z = getRandomInt(-r, r);
+                    if (x*x + z*z - r*r < 0)
+                        points.push(new THREE.Vector3(x, 0, z));
                 }
-      
-                
-               //points.push(new THREE.Vector3(0, height, 0));
 
-                const geometry = new ConvexGeometry( points );
-                const material = new THREE.MeshPhongMaterial( { color: 0x00ff00 } );
+                for(let i = 0; i <= 360; i++){
+                    var x = Math.sin(i * Math.PI/180) * r/2;
+                    var z = Math.cos(i * Math.PI/180) * r/2;
+                    // var x = getRandomInt(-r, r);
+                    // var z = getRandomInt(-r, r);
+                    if (x*x + z*z - r*r < 0)
+                        points.push(new THREE.Vector3(x, 5, z));
+                }
+                const bufferGeometry = new ConvexGeometry( points );
+                var geometry = new THREE.Geometry().fromBufferGeometry( bufferGeometry );
+               
+
+                const loader = new THREE.TextureLoader();
+                const texture = loader.load('resources/images/checker.jpg');
+                texture.repeat.set(0.5, 0.5);
+                texture.wrapS = texture.wrapT = THREE.MirroredRepeatWrapping;
+                var material = new THREE.MeshBasicMaterial( { 
+                    map: texture,
+                    side: THREE.DoubleSide
+                } );
+                assignUVs(geometry);
+               
                 const mesh = new THREE.Mesh( geometry, material );
                 scene.add( mesh );
-            // function drawCircle(radius, color, lineWidth){
-			
-            //         var points = [];
-                    
-            //         // 360 full circle will be drawn clockwise
-            //         for(let i = 0; i <= 360; i++){
-            //             points.push(Math.sin(i*(Math.PI/180))*radius, Math.cos(i*(Math.PI/180))*radius, 0);
-            //         }
-
-            //         var geometry = new LineGeometry();
-            //         geometry.setPositions( points );
                 
-            //         var material = new LineMaterial({
-            //             color: color,
-            //             linewidth: lineWidth
-            //         });
+                function assignUVs(geometry) {
+                    geometry.faceVertexUvs[0] = [];
+                    geometry.faces.forEach(function(face) {
+                        var components = ['x', 'y', 'z'].sort(function(a, b) {
+                            return Math.abs(face.normal[a]) > Math.abs(face.normal[b]);
+                        });
 
-            //         let line = new Line2( geometry, material );
-            //         //line.computeLineDistances();
+                        var v1 = geometry.vertices[face.a];
+                        var v2 = geometry.vertices[face.b];
+                        var v3 = geometry.vertices[face.c];
 
-            //         scene.add( line );
-            //     }
+                        geometry.faceVertexUvs[0].push([
+                            new THREE.Vector2(v1[components[0]], v1[components[1]]),
+                            new THREE.Vector2(v2[components[0]], v2[components[1]]),
+                            new THREE.Vector2(v3[components[0]], v3[components[1]])
+                        ]);
 
-            //     drawCircle(0.5, "0xFFFFFF", 0.0044);
+                    });
+                    geometry.uvsNeedUpdate = true;
+            }
+               //points.push(new THREE.Vector3(0, height, 0));
+
+                
+               // const material = new THREE.MeshPhongMaterial( { color: 0x00ff00 } );
+               
+            
 
                 function render()
                 {
