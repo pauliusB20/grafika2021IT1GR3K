@@ -34,27 +34,33 @@
                 renderer.setSize( window.innerWidth, window.innerHeight );
                 document.body.appendChild( renderer.domElement );
 
+                const scene = new THREE.Scene();
+                scene.background = new THREE.Color("lightgrey");
                 //var cameras = [];
                 const fov = 80;
                 const aspect =  2;  // the canvas default
                 const near = 0.1;
-                const far = 1000;
-                
+                const far = 1000;                
                
                 //Bendro vaizdo kamera
                 const c1 = new THREE.PerspectiveCamera(fov, aspect, near, far);
                 c1.rotation.y = (90 * Math.PI / 180);
-                c1.position.y = 5;
-                c1.position.z = 10;
-                c1.position.x = 45;
-
+                c1.position.y = 7;
+                c1.position.z = 15;
+                c1.position.x = 50;
+                const helper1 = new THREE.CameraHelper( c1 );
+                scene.add( helper1 );
+                scene.add(c1);
                 //cameras.push(c1);
 
                 const c2 = new THREE.PerspectiveCamera(fov, aspect, near, far);
                 c2.rotation.y = (-137 * Math.PI / 180);
                 c2.position.x = -15;
                 c2.position.y = 10;
-                c2.position.z = -15;                
+                c2.position.z = -15; 
+                const helper2 = new THREE.CameraHelper( c2 );
+                scene.add( helper2 );
+                scene.add(c2);               
                
 
                 const c3 = new THREE.PerspectiveCamera(fov, aspect, near, far);
@@ -62,8 +68,9 @@
                 c3.position.x = 20;
                 c3.position.y = 20;
                 c3.position.z = 20;                
-               
-
+                const helper3 = new THREE.CameraHelper( c3 );
+                scene.add( helper3 );
+                scene.add(c3);
                 // Setuping orbit controls
                 // const controls = new OrbitControls( c0, renderer.domElement );
                 // controls.addEventListener( 'change', render );
@@ -73,8 +80,7 @@
                 const divisions = 10;
 
                 const gridHelper = new THREE.GridHelper( size, divisions );
-                const scene = new THREE.Scene();
-                scene.background = new THREE.Color(0xffffff);
+            
                 scene.add( gridHelper );
 
                 //Adding 3d axes
@@ -82,37 +88,16 @@
                 scene.add( axesHelper );
                 // Adding basic light
                 {
-                    const color = 0xFFFFFF;
-                    const intensity = 2;
-                    const light = new THREE.DirectionalLight(color, intensity);
-                    light.position.set(0, 5, 15);
-                    scene.add(light);
+                    const ambientLight = new THREE.AmbientLight("white", 1); // soft white light
+					scene.add( ambientLight );
 
                     const color1 = 0xFFFFFF;
                     const intensity1 = 2;
                     const light1 = new THREE.DirectionalLight(color1, intensity1);
                     light1.position.set(0, -5, -15);
                     scene.add(light1);
-                }
-            
-                //Visualizing the camera
-               
-                const helper1 = new THREE.CameraHelper( c1 );
-                scene.add( helper1 );
-
-                const helper2 = new THREE.CameraHelper( c2 );
-                scene.add( helper2 );
-
-                const helper3 = new THREE.CameraHelper( c3 );
-                scene.add( helper3 );
-
-
-                //Adding the camera
-                //scene.add(c0);
-                scene.add(c1);
-                scene.add(c2);
-                scene.add(c3);
-
+                }           
+                
                 //Sachmatu lenta
                 function createChessBoard(sizeX, sizeZ)
                 {
