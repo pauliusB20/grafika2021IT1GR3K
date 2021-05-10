@@ -65,27 +65,8 @@
                     light1.position.set(0, -5, -15);
                     scene.add(light1);
                 }
-            
-
-                // const curve = new THREE.EllipseCurve(
-                //     0,  0,            // ax, aY
-                //     10, 10,           // xRadius, yRadius
-                //     0,  2 * Math.PI,  // aStartAngle, aEndAngle
-                //     false,            // aClockwise
-                //     0                 // aRotation
-                // );
-
-                // const points = curve.getPoints( 50 );
-                // console.log(points);
-                // const geometry = new THREE.BufferGeometry().setFromPoints( points );
-
-                // const material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
-
-                // // Create the final object to add to the scene
-                // const ellipse = new THREE.Line( geometry, material );
-
-            //    var height = 10;
-            
+                        
+            //Figūros sūkurimas
                 var r = 5;
                
                 var points = [];
@@ -93,8 +74,7 @@
                for(let i = 0; i <= 360; i++){
                     var x = Math.sin(i*Math.PI/180) * r;
                     var z = Math.cos(i*Math.PI/180) * r;
-                    // var x = getRandomInt(-r, r);
-                    // var z = getRandomInt(-r, r);
+
                     if (x*x + z*z - r*r < 0)
                         points.push(new THREE.Vector3(x, 0, z));
                 }
@@ -102,8 +82,7 @@
                 for(let i = 0; i <= 360; i++){
                     var x = Math.sin(i * Math.PI/180) * r/2;
                     var z = Math.cos(i * Math.PI/180) * r/2;
-                    // var x = getRandomInt(-r, r);
-                    // var z = getRandomInt(-r, r);
+
                     if (x*x + z*z - r*r < 0)
                         points.push(new THREE.Vector3(x, 5, z));
                 }
@@ -148,13 +127,7 @@
 
                     geometry.uvsNeedUpdate = true;
             }
-               //points.push(new THREE.Vector3(0, height, 0));
-
-                
-               // const material = new THREE.MeshPhongMaterial( { color: 0x00ff00 } );
-               
-            
-
+              
                 function render()
                 {
                     setTimeout( function() {
