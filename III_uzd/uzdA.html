@@ -1,144 +1,204 @@
 <!DOCTYPE html>
+<!-- Convex random truncated cone/nupjautinis kūgis -->
 <html>
-    <head>
-		<meta charset="utf-8">
-		<title>IIIA uzd. ND</title>
-		<style>
-			body { margin: 0; }
-		</style>
-        <!-- <script src="lib/three.js"></script> -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.js" integrity="sha512-u+vtyZDzyd0zgAEffKfoNx2BnCahAOBBYvzGu6vma1B18zQ6lEGF3F6dAFvqaxDoIU/GZRxcXV5oq23OIrkQwg==" crossorigin="anonymous"></script>
-       
-    </head>
-    <body>
-        <canvas id="c"></canvas>
-        <script type="module">
-            import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.117.1/build/three.module.js';
-            import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
-            import { ConvexGeometry } from "https://threejs.org/examples/jsm/geometries/ConvexGeometry.js";
-            import { LineGeometry } from "https://threejs.org/examples/jsm/lines/LineGeometry.js";
-            import { LineMaterial } from "https://threejs.org/examples/jsm/lines/LineMaterial.js";
-            import { Line2 } from "https://threejs.org/examples/jsm/lines/Line2.js";
-            function main() {
-                // NOTE:
-                // Fix arrow height
-                const canvas = document.querySelector('#c');
-                const renderer = new THREE.WebGLRenderer({canvas});
-                renderer.setSize( window.innerWidth, window.innerHeight );
-                document.body.appendChild( renderer.domElement );
 
-                // Creating camera
-                const fov = 80;
-                const aspect =  2;  // the canvas default
-                const near = 0.1;
-                const far = 1000;
-                const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-                camera.position.z = 15;
+<head>
+    <meta charset="utf-8">
+    <title>IIIA uzd. ND</title>
+    <style>
+        body {
+            margin: 0;
+        }
+    </style>
+    <!-- <script src="lib/three.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.js"
+        integrity="sha512-u+vtyZDzyd0zgAEffKfoNx2BnCahAOBBYvzGu6vma1B18zQ6lEGF3F6dAFvqaxDoIU/GZRxcXV5oq23OIrkQwg=="
+        crossorigin="anonymous"></script>
 
-                // Setuping orbit controls
-                const controls = new OrbitControls( camera, renderer.domElement );
-                controls.addEventListener( 'change', render );
-                
-                // Adding 3D grid
-                const size = 10;
-                const divisions = 10;
+</head>
 
-                const gridHelper = new THREE.GridHelper( size, divisions );
-                const scene = new THREE.Scene();
-                scene.background = new THREE.Color(0xffffff);
-                scene.add( gridHelper );
-
-                //Adding 3d axes
-                const axesHelper = new THREE.AxesHelper( 10 );
-                scene.add( axesHelper );
-                // Adding basic light
-                {
-                    const color = 0xFFFFFF;
-                    const intensity = 2;
-                    const light = new THREE.DirectionalLight(color, intensity);
-                    light.position.set(0, 5, 15);
-                    scene.add(light);
-
-                    const color1 = 0xFFFFFF;
-                    const intensity1 = 2;
-                    const light1 = new THREE.DirectionalLight(color1, intensity1);
-                    light1.position.set(0, -5, -15);
-                    scene.add(light1);
-                }
-                        
-            //Figūros sūkurimas
-                var r = 5;
-               
-                var points = [];
+<body>
+    <canvas id="c"></canvas>
+    <script type="module">
+        import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.117.1/build/three.module.js';
+        import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
+        import { ConvexGeometry } from "https://threejs.org/examples/jsm/geometries/ConvexGeometry.js";
+        import { LineGeometry } from "https://threejs.org/examples/jsm/lines/LineGeometry.js";
+        import { LineMaterial } from "https://threejs.org/examples/jsm/lines/LineMaterial.js";
+        import { Line2 } from "https://threejs.org/examples/jsm/lines/Line2.js";
+        
+        function main() {
            
-               for(let i = 0; i <= 360; i++){
-                    var x = Math.sin(i*Math.PI/180) * r;
-                    var z = Math.cos(i*Math.PI/180) * r;
+            const canvas = document.querySelector('#c');
+            const renderer = new THREE.WebGLRenderer({ canvas });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
 
-                    if (x*x + z*z - r*r < 0)
-                        points.push(new THREE.Vector3(x, 0, z));
-                }
+            // Creating main orbitall camera
+            const fov = 80;
+            const aspect = 2;  // the canvas default
+            const near = 0.1;
+            const far = 1000;
+            const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+            camera.position.z = 15;
 
-                for(let i = 0; i <= 360; i++){
-                    var x = Math.sin(i * Math.PI/180) * r/2;
-                    var z = Math.cos(i * Math.PI/180) * r/2;
+            // Setuping orbit controls
+            const controls = new OrbitControls(camera, renderer.domElement);
+            controls.addEventListener('change', render);
 
-                    if (x*x + z*z - r*r < 0)
-                        points.push(new THREE.Vector3(x, 5, z));
-                }
-                const bufferGeometry = new ConvexGeometry( points );
-                var geometry = new THREE.Geometry().fromBufferGeometry( bufferGeometry );
-               
+            // Adding 3D grid
+            const size = 10;
+            const divisions = 10;
 
-                const loader = new THREE.TextureLoader();
-                const texture = loader.load('resources/images/checker.jpg');
-                texture.repeat.set(0.5, 0.5);
-                texture.wrapS = texture.wrapT = THREE.MirroredRepeatWrapping;
-                var material = new THREE.MeshBasicMaterial( { 
-                    map: texture,
-                    side: THREE.DoubleSide
-                } );
-                assignUVs(geometry);
-               
-                const mesh = new THREE.Mesh( geometry, material );
-                mesh.updateWorldMatrix(true);
-                scene.add( mesh );
+            const gridHelper = new THREE.GridHelper(size, divisions);
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xffffff);
+            scene.add(gridHelper);
+
+            //Adding 3d axes
+            const axesHelper = new THREE.AxesHelper(10);
+            scene.add(axesHelper);
+
+            // Adding requried scene light
+            {
+                const ambientLight = new THREE.AmbientLight(0xFFFFFF, 1); // soft white light
+				scene.add( ambientLight );
+
+                const color1 = 0xFFFFFF;
+                const intensity1 = 2;
+                const light1 = new THREE.DirectionalLight(color1, intensity1);
+                light1.position.set(0, -5, -15);
+                scene.add(light1);
+            }
+            //Function for creating random numbers
+            function getRandomInt(min, max) {
+                min = Math.ceil(min);
+                max = Math.floor(max);
+                return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+            }
+            //Model creation logic
+            var r = 5;
+            var height = 3;
+            var points = [];
+            //Bottom geometry
+            for (let i = 0; i <= 360; i++) {
+                // var x = Math.sin(i * Math.PI / 180) * r;                
+                // var z = Math.cos(i * Math.PI / 180) * r;
+                var x = getRandomInt(-r, r);
+                var z = getRandomInt(-r, r);
+
+                if (x * x + z * z - r * r < 0)
+                    points.push(new THREE.Vector3(x, 0, z));
+            }
+            //Upper geometry
+            for (let i = 0; i <= 360; i++) {
+                // var x = Math.sin(i * Math.PI / 180) * r / 2;
+                // var z = Math.cos(i * Math.PI / 180) * r / 2;
+                var x = getRandomInt(-r/2, r/2);
+                var z = getRandomInt(-r/2, r/2);
+
+                if (x * x + z * z - r * r < 0)
+                    points.push(new THREE.Vector3(x, height, z));
+            }
+            const bufferGeometry = new ConvexGeometry(points);
+            var geometry = new THREE.Geometry().fromBufferGeometry(bufferGeometry);
+
+            //Loading texture
+            const texture = new THREE.TextureLoader().load('resources/images/checker.jpg');
+            
+            texture.repeat.set(0.5, 0.5);
+            texture.wrapS = texture.wrapT = THREE.MirroredRepeatWrapping;
+            var material = new THREE.MeshBasicMaterial({
+                map: texture,
+                side: THREE.DoubleSide,
+                color: 0x000000
+            });
+            //Trying to assign UV
+            //assignUVs(geometry);
+
+            const mesh = new THREE.Mesh(geometry, material);
+            // mesh.updateWorldMatrix(true);
+            scene.add(mesh);    
+            
+            var geoLine = new THREE.EdgesGeometry( mesh.geometry ); // or WireframeGeometry
+            var matLine = new THREE.LineBasicMaterial( { color: 0xffffff } );
+            var wireframeMesh = new THREE.LineSegments( geoLine, matLine );
+            mesh.add( wireframeMesh );
+
+            //Not working function UV-----------------
+            function assignUVs(geometry) {
                 
-                function assignUVs(geometry) {
-                    geometry.faceVertexUvs[0] = [];
+            //     geometry.faceVertexUvs[0].push([
+            //             new THREE.Vector2(0,0),        //play with these values
+            //             new THREE.Vector2(1,0),
+            //             new THREE.Vector2(0, 1),
+            //             new THREE.Vector2(1, 1)
+            //         ]);
 
-                    geometry.faces.forEach(function(face) {
+            // //updating the uvs
+            //     geometry.uvsNeedUpdate = true;
 
-                        var uvs = [];
-                        var ids = [ 'a', 'b', 'c'];
-                        for( var i = 0; i < ids.length; i++ ) {
-                            var vertex = geometry.vertices[ face[ ids[ i ] ] ].clone();
+                // var uvAttribute = geometry.attributes.uv;
+		
+                // for ( var i = 0; i < uvAttribute.count; i ++ ) {
+                        
+                //     var u = uvAttribute.getX( i );
+                //     var v = uvAttribute.getY( i );
+                            
+                //     // do something with uv
 
-                            var n = vertex.normalize();
-                            var yaw = .5 - Math.atan( n.z, - n.x ) / ( 2.0 * Math.PI );
-                            var pitch = .5 - Math.asin( n.y ) / Math.PI;
+                //     // write values back to attribute
+                            
+                //     uvAttribute.setXY( i, u, v );
+                        
+                // }
+                //Not working logic
+                geometry.faceVertexUvs[0] = [];
 
-                            var u = yaw,
-                                v = pitch;
-                            uvs.push( new THREE.Vector2( u, v ) );
-                        }
-                        geometry.faceVertexUvs[ 0 ].push( uvs );
-                    });
+                geometry.faces.forEach(function (face) {
 
-                    geometry.uvsNeedUpdate = true;
+                    var uvs = [];
+                    var ids = ['a', 'b', 'c'];
+                    for (var i = 0; i < ids.length; i++) {
+                        var vertex = geometry.vertices[face[ids[i]]].clone();
+
+                        var n = vertex.normalize();
+                        var yaw = .5 - Math.atan(n.z, - n.x) / (2.0 * Math.PI);
+                        var pitch = .5 - Math.asin(n.y) / Math.PI;
+
+                        var u = yaw,
+                            v = pitch;
+                        uvs.push(new THREE.Vector2(u, v));
+                    }
+                    geometry.faceVertexUvs[0].push(uvs);
+                });
+
+                geometry.uvsNeedUpdate = true;
             }
-              
-                function render()
-                {
-                    setTimeout( function() {
-                         requestAnimationFrame(render);
-                    }, 1000 / 30 ); //Pagreita kadru atvaizdavima
-                    renderer.render( scene, camera );
+            //For increasing fps
+            let clock = new THREE.Clock();
+            let delta = 0;
+            //30 fps
+            let interval = 1 / 30;
+            function update() {
+                requestAnimationFrame(update);
+                delta += clock.getDelta();
+
+                if (delta > interval) {                    
+                    render();
+
+                    delta = delta % interval;
                 }
-
-                render();
             }
-            main();
-        </script>
-    </body>
+            function render() {
+                requestAnimationFrame(render);
+                renderer.render(scene, camera);
+            }
+
+            render();
+        }
+        main();
+    </script>
+</body>
+
 </html>
