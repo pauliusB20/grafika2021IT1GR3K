@@ -6,7 +6,6 @@
 		<style>
 			body { margin: 0; }
 		</style>
-        <script src="lib/Tween.js"></script> 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.js" integrity="sha512-u+vtyZDzyd0zgAEffKfoNx2BnCahAOBBYvzGu6vma1B18zQ6lEGF3F6dAFvqaxDoIU/GZRxcXV5oq23OIrkQwg==" crossorigin="anonymous"></script>
        
     </head>
@@ -22,6 +21,7 @@
                 var goBackFollow = false;
                 var dollyStarted = false;
                 var followStarted = false;
+
                 //Animation speed parameters
                 const dollyZoomSpeed = 0.1;
                 const dollyZoomCoef = 0.25;
@@ -33,14 +33,13 @@
                 document.body.appendChild( renderer.domElement );
 
                 const scene = new THREE.Scene();
-                scene.background = new THREE.Color("lightgrey");
-                //var cameras = [];
+                scene.background = new THREE.Color("rgba(147, 173, 155, 1)");
                 const fov = 80;
-                const aspect =  2;  // the canvas default
+                const aspect =  window.innerWidth/window.innerHeight;  // the canvas default
                 const near = 0.1;
                 const far = 1000;                
                
-                //Bendro vaizdo kamera
+                //Main view camera
                 const c1 = new THREE.PerspectiveCamera(fov, aspect, near, far);
                 c1.rotation.y = (90 * Math.PI / 180);
                 c1.position.y = 7;
@@ -49,8 +48,8 @@
                 const helper1 = new THREE.CameraHelper( c1 );
                 scene.add( helper1 );
                 scene.add(c1);
-                //cameras.push(c1);
 
+                //Dolly zoom camera
                 const c2 = new THREE.PerspectiveCamera(fov, aspect, near, far);
                 c2.rotation.y = (-137 * Math.PI / 180);
                 c2.position.x = -15;
@@ -60,18 +59,16 @@
                 scene.add( helper2 );
                 scene.add(c2);               
                
-
+                //Camera follow
                 const c3 = new THREE.PerspectiveCamera(fov, aspect, near, far);
+                c3.rotation.y = (-90 * Math.PI / 180);
                 c3.rotation.x = (-270 * Math.PI / 180);
                 c3.position.x = 20;
                 c3.position.y = 20;
-                c3.position.z = 20;                
+                c3.position.z = 25;                
                 const helper3 = new THREE.CameraHelper( c3 );
                 scene.add( helper3 );
-                scene.add(c3);
-                // Setuping orbit controls
-                // const controls = new OrbitControls( c0, renderer.domElement );
-                // controls.addEventListener( 'change', render );
+                scene.add(c3);               
                 
                 // Adding 3D grid
                 const size = 10;
@@ -96,7 +93,7 @@
                     scene.add(light1);
                 }           
                 
-                //Sachmatu lenta
+                //Sachmatu lenta/Chessboard
                 function createChessBoard(sizeX, sizeZ)
                 {
                     const board = new THREE.Group();
@@ -156,16 +153,18 @@
                     return rikis;
                 }
                 
-               let clock = new THREE.Clock();
-               let delta = 0;
-               //30 fps
-               let interval = 1 / 30;               
+            //    let clock = new THREE.Clock();
+            //    let delta = 0;
+            //    //30 fps
+            //    let interval = 1 / 30;               
                
+               //Main view camera
                function viewCamera()
                 {
                     requestAnimationFrame(viewCamera);
                     render(c1);
                 }
+                //Dolly zoom camera
                 function doolyZoomAnim()
                 {
                     requestAnimationFrame(doolyZoomAnim);                   
@@ -209,7 +208,7 @@
 
                 scene.add(spawnRikis);
 
-               
+                //Camera follow camera
                 function cameraFollow()
                 {
                     requestAnimationFrame(cameraFollow);
@@ -287,22 +286,19 @@
                     }
                     //viewScene(c3);
 
-                }}, "add").name("View");
+                }}, "add").name("View");  
                 
-                
+                // function update(camera) {
+                //     requestAnimationFrame(update);
+                //     delta += clock.getDelta();
 
-                
-                function update(camera) {
-                    requestAnimationFrame(update);
-                    delta += clock.getDelta();
+                //     if (delta  > interval) {
+                //             // The draw or time dependent code are here
+                //             render(camera);
 
-                    if (delta  > interval) {
-                            // The draw or time dependent code are here
-                            render(camera);
-
-                            delta = delta % interval;
-                        }
-                }
+                //             delta = delta % interval;
+                //         }
+                // }
                 function render(camera)
                 {
                     renderer.render( scene, camera );
