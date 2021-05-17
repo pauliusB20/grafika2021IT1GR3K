@@ -1,0 +1,16 @@
+Prieš paleidžiant kodą,
+Būti įėjus einamąjame III_uzd kataloge
+
+Reikia įdiegti:
+*NodeJS iš https://nodejs.org/en/download/
+*Suvesti CMD konsolėje 
+npm install -g httpster
+
+Po įdiegimo, norint paleisti kodą, reikia suvesti terminal
+*httpster -p 5000
+
+Ir pabaigoje atsidarius naršyklę galima suvesti URL:
+
+http://localhost:5000/uzdA.html
+
+http://localhost:5000/uzdB.html

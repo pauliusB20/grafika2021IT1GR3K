@@ -125,7 +125,7 @@
             scene.add(mainGeoCone);    
             
             var geoLine = new THREE.EdgesGeometry( mainGeoCone.geometry ); // or WireframeGeometry
-            var matLine = new THREE.LineBasicMaterial( { color: 0xffffff } );
+            var matLine = new THREE.LineBasicMaterial( { color: 0x000000 } );
             var wireframeMeshCone = new THREE.LineSegments( geoLine, matLine );
             mainGeoCone.add( wireframeMeshCone );
 
