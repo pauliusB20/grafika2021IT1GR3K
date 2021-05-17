@@ -136,23 +136,22 @@
 
                 geometry.faces.forEach(function (face) {
 
-                    var uvs = [];
+                    var uvPoints = [];
                     var ids = ['a', 'b', 'c'];
                     for (var i = 0; i < ids.length; i++) {
                         var vertex = geometry.vertices[face[ids[i]]].clone();
 
                         var n = vertex.normalize();
-                        var yaw = .5 - Math.atan(n.z, - n.x) / (0.5 * Math.PI);
-                        var pitch = .5 - Math.asin(n.y) / Math.PI;
-
-                        var u = yaw,
-                            v = pitch;
-                        uvs.push(new THREE.Vector2(u, v));
+                        var u = .5 - Math.atan(n.z, - n.x) / (0.5 * Math.PI);
+                        var v = .5 - Math.asin(n.y) / Math.PI;
+                        
+                        uvPoints.push(new THREE.Vector2(u, v));
+                       
                     }
-                    geometry.faceVertexUvs[0].push(uvs);
+                    geometry.faceVertexUvs[0].push(uvPoints);
                 });
 
-                geometry.uvsNeedUpdate = true;
+                geometry.uvsNeedUpdate = true; //Setting the flag that the uvs are upgraded
             }
             //For increasing fps
             let clock = new THREE.Clock();
