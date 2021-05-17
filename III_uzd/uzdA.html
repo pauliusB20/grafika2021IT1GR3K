@@ -99,7 +99,7 @@
                 var x = getRandomInt(-r/2, r/2);
                 var z = getRandomInt(-r/2, r/2);
 
-                if (x * x + z * z - r * r < 0)
+                if ((x * x) + (z * z) - ((r/2) * (r/2)) < 0)
                     points.push(new THREE.Vector3(x, height, z));
             }
             const bufferGeometry = new ConvexGeometry(points);
@@ -115,19 +115,21 @@
                 map: texture,
                 side: THREE.DoubleSide,
                 color: 0xffffff
+                //color: 0x000000
             });
             //Trying to assign UV
             assignUVs(geometry);
 
-            const mesh = new THREE.Mesh(geometry, material);
+            const mainGeoCone = new THREE.Mesh(geometry, material);
             // mesh.updateWorldMatrix(true);
-            scene.add(mesh);    
+            scene.add(mainGeoCone);    
             
-            var geoLine = new THREE.EdgesGeometry( mesh.geometry ); // or WireframeGeometry
+            var geoLine = new THREE.EdgesGeometry( mainGeoCone.geometry ); // or WireframeGeometry
             var matLine = new THREE.LineBasicMaterial( { color: 0xffffff } );
-            var wireframeMesh = new THREE.LineSegments( geoLine, matLine );
-            mesh.add( wireframeMesh );
+            var wireframeMeshCone = new THREE.LineSegments( geoLine, matLine );
+            mainGeoCone.add( wireframeMeshCone );
 
+            //Function for creating UVs
             function assignUVs(geometry) {
            
                 geometry.faceVertexUvs[0] = [];
@@ -139,18 +141,20 @@
                     for (var i = 0; i < ids.length; i++) {
                         var vertex = geometry.vertices[face[ids[i]]].clone();
 
-                        var n = vertex.normalize();
-                        var u = .5 - Math.atan(n.z, - n.x) / (0.5 * Math.PI);
+                        var n = vertex.normalize(); 
+                        var u = .5 - Math.atan(n.z, - n.x) / (0.5 * Math.PI); //Angle between two axes is beeing used atan
                         var v = .5 - Math.asin(n.y) / Math.PI;
                         
                         uvPoints.push(new THREE.Vector2(u, v));
                        
                     }
-                    geometry.faceVertexUvs[0].push(uvPoints);
+                    geometry.faceVertexUvs[0].push(uvPoints); //updaing uv kooridinates
                 });
 
                 geometry.uvsNeedUpdate = true; //Setting the flag that the uvs are upgraded
             }
+            
+            
             //For increasing fps
             let clock = new THREE.Clock();
             let delta = 0;
