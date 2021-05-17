@@ -15,7 +15,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.js"
         integrity="sha512-u+vtyZDzyd0zgAEffKfoNx2BnCahAOBBYvzGu6vma1B18zQ6lEGF3F6dAFvqaxDoIU/GZRxcXV5oq23OIrkQwg=="
         crossorigin="anonymous"></script>
-    <script  src="lib/require.js"></script>
 
 </head>
 
@@ -129,15 +128,14 @@
             var wireframeMesh = new THREE.LineSegments( geoLine, matLine );
             mesh.add( wireframeMesh );
 
-            //Not working function UV-----------------
             function assignUVs(geometry) {
            
                 geometry.faceVertexUvs[0] = [];
 
-                geometry.faces.forEach(function (face) {
+                geometry.faces.forEach(function (face) { //Setting for each face triangle
 
                     var uvPoints = [];
-                    var ids = ['a', 'b', 'c'];
+                    var ids = ['a', 'b', 'c']; //Face triangle point ids
                     for (var i = 0; i < ids.length; i++) {
                         var vertex = geometry.vertices[face[ids[i]]].clone();
 
