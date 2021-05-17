@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <!-- Convex random truncated cone/nupjautinis kūgis -->
+<!-- leisti httpster -p 5000 -->
 <html>
 
 <head>
@@ -14,6 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.js"
         integrity="sha512-u+vtyZDzyd0zgAEffKfoNx2BnCahAOBBYvzGu6vma1B18zQ6lEGF3F6dAFvqaxDoIU/GZRxcXV5oq23OIrkQwg=="
         crossorigin="anonymous"></script>
+    <script  src="lib/require.js"></script>
 
 </head>
 
@@ -26,6 +28,7 @@
         import { LineGeometry } from "https://threejs.org/examples/jsm/lines/LineGeometry.js";
         import { LineMaterial } from "https://threejs.org/examples/jsm/lines/LineMaterial.js";
         import { Line2 } from "https://threejs.org/examples/jsm/lines/Line2.js";
+        //import { texture } from "./resources/images/checker.jpg";
         
         function main() {
            
@@ -104,17 +107,18 @@
             var geometry = new THREE.Geometry().fromBufferGeometry(bufferGeometry);
 
             //Loading texture
+           // const texture = require(['resources/images/checker.jpg']);
             const texture = new THREE.TextureLoader().load('resources/images/checker.jpg');
             
-            texture.repeat.set(0.5, 0.5);
-            texture.wrapS = texture.wrapT = THREE.MirroredRepeatWrapping;
+            // texture.repeat.set(0.5, 0.5);
+            // texture.wrapS = texture.wrapT = THREE.MirroredRepeatWrapping;
             var material = new THREE.MeshBasicMaterial({
                 map: texture,
                 side: THREE.DoubleSide,
-                color: 0x000000
+                color: 0xffffff
             });
             //Trying to assign UV
-            //assignUVs(geometry);
+            assignUVs(geometry);
 
             const mesh = new THREE.Mesh(geometry, material);
             // mesh.updateWorldMatrix(true);
@@ -127,32 +131,7 @@
 
             //Not working function UV-----------------
             function assignUVs(geometry) {
-                
-            //     geometry.faceVertexUvs[0].push([
-            //             new THREE.Vector2(0,0),        //play with these values
-            //             new THREE.Vector2(1,0),
-            //             new THREE.Vector2(0, 1),
-            //             new THREE.Vector2(1, 1)
-            //         ]);
-
-            // //updating the uvs
-            //     geometry.uvsNeedUpdate = true;
-
-                // var uvAttribute = geometry.attributes.uv;
-		
-                // for ( var i = 0; i < uvAttribute.count; i ++ ) {
-                        
-                //     var u = uvAttribute.getX( i );
-                //     var v = uvAttribute.getY( i );
-                            
-                //     // do something with uv
-
-                //     // write values back to attribute
-                            
-                //     uvAttribute.setXY( i, u, v );
-                        
-                // }
-                //Not working logic
+           
                 geometry.faceVertexUvs[0] = [];
 
                 geometry.faces.forEach(function (face) {
@@ -163,7 +142,7 @@
                         var vertex = geometry.vertices[face[ids[i]]].clone();
 
                         var n = vertex.normalize();
-                        var yaw = .5 - Math.atan(n.z, - n.x) / (2.0 * Math.PI);
+                        var yaw = .5 - Math.atan(n.z, - n.x) / (0.5 * Math.PI);
                         var pitch = .5 - Math.asin(n.y) / Math.PI;
 
                         var u = yaw,
