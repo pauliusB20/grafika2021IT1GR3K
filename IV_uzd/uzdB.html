@@ -1,0 +1,191 @@
+<html>
+    <head>
+        <title>IVB task</title>
+        <meta charset="utf-8">
+</head>
+ 
+    <body>
+        <div id="container"></div>
+    </body>
+    
+    <script src="lib/three.min.js"></script>
+    <script src="lib/TrackballControls.js"></script>
+	<script src="lib/dat.gui.js"></script>
+    <script src="lib/uclass_TeapotGeometry.js"></script>
+
+    <script type="x-shader/x-vertex" id="vertexShader">
+
+	//For the teapot strip
+	precision mediump float;
+
+	varying vec3 vPosition; 
+	varying vec3 vNormal; 
+	varying vec2 vUv;
+
+	//Parameters for surface lighting
+	uniform float dx, dy, dz;
+	
+	//Calculating model vertices
+	void main()
+	{
+		vUv = uv;
+		vNormal = normalMatrix * normal;
+		vPosition = position;
+		gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0 );         
+	}
+    </script>
+ 
+	<script type="x-shader/x-vertex" id="fragmentShader">
+
+	#extension GL_OES_standard_derivatives : enable
+
+	//For calculating textures
+	precision mediump float;
+	uniform float uEdge;	
+
+	//For model surface lighting
+	varying vec3 vPosition; 
+	varying vec3 vNormal; 
+	varying vec2 vUv;
+	uniform float dx, dy, dz;
+
+	vec3 squareTexture(vec2 tex) 
+	{
+		//Calculating coordinates
+		float positionY = normalize(vPosition).y;
+		float xAbs = abs(vPosition.x);
+
+		//Calculating texture strip on the teapot
+		if((positionY > -0.005 && positionY < 0.25) && xAbs < 19.0)
+		{
+			// Main shader colors
+			vec3 blueColor = vec3(0.0, 0.0, 1.0);
+			vec3 yellowColor = vec3(1.0, 1.0, 0.0);
+	
+			// shader uv coordinates
+			float u = fract(vUv.x * 14.0),
+			 	  v = fract(vUv.y * 14.0);
+			
+			//Shader texture quality on the teapot
+			float uv1 = (0.7 - abs(u - v));
+			float uv2 = (u + v - 0.3);
+			float fText = min(uv1, uv2);
+
+			fText = min(fText, 1.7 - u - v);
+			fText = min(fText, u - 0.01);
+			fText = min(fText, 0.99 - u);
+			fText = min(fText, v - 0.01);
+			fText = min(fText, 0.99 - v);
+
+			//Calculating edge smooth
+			float grad = length(vec2(dFdx(fText), dFdy(fText))); 
+			float d = uEdge * grad;
+			float edgeFactor = smoothstep(-d, d, fText);
+	
+			// final color for the shader
+			vec3 finalShaderColor = mix(blueColor, yellowColor, edgeFactor);
+			return finalShaderColor;
+		}
+		else 
+		{
+			return vec3(1.0);
+		}
+	}	
+	//Main function
+	void main() 
+	{
+		vec3 lightDir = normalize(vec3(dx , dy , dz)); 
+		float intensitySurfaceLight = dot(lightDir, normalize(vNormal));
+	    vec3 color = vec3(intensitySurfaceLight);
+		gl_FragColor = vec4(intensitySurfaceLight * squareTexture(vUv), 1.0);
+	}
+	</script>
+ 
+    <script type="text/javascript" id="mainCode">
+ 
+ var
+	control,    
+	container, 
+    renderer, 
+    scene, 
+    camera, 
+    mesh, 
+    start = Date.now(),
+    fov = 30;
+ 
+window.addEventListener( 'load', function() {
+ 
+    container = document.getElementById( "container" );
+     
+    scene = new THREE.Scene();
+ 
+    camera = new THREE.PerspectiveCamera( 
+        fov, 
+        window.innerWidth / window.innerHeight, 
+        1, 
+        10000 );
+    camera.position.z = 100;
+    camera.target = new THREE.Vector3( 0, 0, 0 );
+ 
+    scene.add( camera );
+     
+    material = new THREE.ShaderMaterial( {
+        uniforms: { 
+			dx: {type: 'f', value:  0.0}, 
+			dy: {type: 'f', value:  0.0}, 
+			dz: {type: 'f', value:  1.0},
+			uEdge: {type: 'f', value:  2.0} 
+        },
+        vertexShader: document.getElementById( 'vertexShader' ).textContent,
+        fragmentShader: document.getElementById( 'fragmentShader' ).textContent  
+    } );
+     
+	var teapotSize = 15; 
+	var segments = 20;
+	geo = new THREE.TeapotGeometry(teapotSize, segments, true, true, true, true, true);
+	//size, segments, bottom, lid, body, fitLid, blinn
+	material.side = THREE.DoubleSide;
+	mesh = new THREE.Mesh(geo, material); 
+	scene.add( mesh );
+
+
+// MENU    
+    control = new function() {
+        this.x = 0.5;
+        this.y = 0.5;
+		this.z = 1.0;
+        this.edge = 2.0;
+    }
+	var gui = new dat.GUI();
+    gui.add(control, 'x', -1.0, 1.0, 0.0).name('Light on X');    
+    gui.add(control, 'y', -1.0, 1.0, 0.0).name('Light on Y');    
+	gui.add(control, 'z', 1.0, 2.0, 1.0).name('Light on Z');    
+    gui.add(control, 'edge', 0.0, 12.0).name('Edge smooth');  
+
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+     
+    container.appendChild( renderer.domElement );
+	controls = new THREE.TrackballControls( camera, renderer.domElement );     
+    render();
+ 
+} );
+ 
+function render() {
+
+	// Update uniform variable data
+    material.uniforms.dx.value = control.x; 
+    material.uniforms.dy.value = control.y; 
+	material.uniforms.dz.value = control.z;
+    material.uniforms.uEdge.value = control.edge; 
+
+    // render
+    renderer.render( scene, camera );
+    requestAnimationFrame( render );
+    controls.update(); 
+}
+
+    </script>
+ 
+</html>
+
