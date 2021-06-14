@@ -66,11 +66,12 @@
 			float u = fract(vUv.x * 14.0),
 			 	  v = fract(vUv.y * 14.0);
 			
-			//Shader texture quality on the teapot
+			//Shader texture quality on the teapot calculating
 			float uv1 = (0.7 - abs(u - v));
 			float uv2 = (u + v - 0.3);
 			float fText = min(uv1, uv2);
 
+			//calcualting strip texture value
 			fText = min(fText, 1.7 - u - v);
 			fText = min(fText, u - 0.01);
 			fText = min(fText, 0.99 - u);
